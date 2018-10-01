@@ -1,1 +1,1 @@
-# Basic ML Algo from sractch
+# Basic ML Algorithm from sractch
