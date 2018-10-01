@@ -1,1 +1,1 @@
-# BrainTeaser
+# Basic ML Algo from sractch
