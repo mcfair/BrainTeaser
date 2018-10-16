@@ -2,105 +2,6 @@ import numpy as np
 from collections import Counter
 
 class KD_TREE:
-    
-    # this queue keeps the k nearest points,value and distances
-    class BOUNDED_PRIORITY_QUEUE:
-        class _NODE_QUEUE:
-            __slots__ = '_distance','_point','_value','_next'
-            def __init__(self, distance, point, value):
-                self._distance = distance
-                self._point = point
-                self._value = value
-                self._next = None
-
-            def __str__(self):
-                return str(self._value)
-
-        def __init__(self, max_length):
-            self._len = 0
-            self._max_length = max_length
-            self._head = None
-            self._tail = None
-            self._type = None
-
-        def __len__(self):
-            return self._len
-
-        def __str__(self):
-            output = ""
-            cursor = self._head
-            while cursor != None:
-                output += str(cursor._value) + ','
-                cursor = cursor._next
-            return output
-
-        def is_empty(self):
-            return self._len == 0
-        
-        def is_full(self):
-            return (self._len == self._max_length)
-
-        # insert a node in the queue if it is smaller than one element
-        # then delete the highest element
-        def insert(self, distance, point, value):     
-            new_node = self._NODE_QUEUE(distance, point, value)
-
-            if self.is_empty():
-                self._head = new_node
-                self._len = 1
-                return 1
-            
-            cursor = self._head
-            while cursor._next != None:
-                if((cursor._point == point).all()):
-                    return 1
-                cursor = cursor._next
-            if((cursor._point == point).all()):
-                    return 1
-                
-            cursor = self._head
-
-            if self._len < self._max_length:
-                self._len += 1
-                if cursor._distance < distance:
-                    self._head, new_node._next = new_node, cursor
-                    return 1
-
-                while cursor._next != None and cursor._next._distance > distance:
-                    cursor = cursor._next
-                new_node._next, cursor._next = cursor._next, new_node
-                return 1
-
-            elif self._len == self._max_length:
-                if cursor._distance < distance:
-                    return 0
-
-                while cursor._next != None and cursor._next._distance > distance:
-                    cursor = cursor._next
-                new_node._next, cursor._next = cursor._next, new_node
-
-                self._head = self._head._next
-                return 1
-
-        def get_distances(self):
-            output = list()
-            cursor = self._head
-            while cursor != None:
-                output.append(cursor._distance)
-                cursor = cursor._next
-            return output
-
-        def get_results(self):
-            output = list()
-            cursor = self._head
-            while cursor != None:
-                output.append(cursor._value)
-                cursor = cursor._next
-            return output
-        
-        def get_max(self):
-            return self._head._distance
-
     class _NODE:
         def __init__(self, value, point, axis, location, parent=None):
             __slots__ = 'value','parent','point','axis','left','right','location'
@@ -250,3 +151,102 @@ class KD_TREE:
                 accurate += 1
 
         return accurate/len(point)
+    
+# this queue keeps the k nearest points,value and distances
+class BOUNDED_PRIORITY_QUEUE:
+    class _NODE_QUEUE:
+        __slots__ = '_distance','_point','_value','_next'
+        def __init__(self, distance, point, value):
+            self._distance = distance
+            self._point = point
+            self._value = value
+            self._next = None
+
+        def __str__(self):
+            return str(self._value)
+
+    def __init__(self, max_length):
+        self._len = 0
+        self._max_length = max_length
+        self._head = None
+        self._tail = None
+        self._type = None
+
+    def __len__(self):
+        return self._len
+
+    def __str__(self):
+        output = ""
+        cursor = self._head
+        while cursor != None:
+            output += str(cursor._value) + ','
+            cursor = cursor._next
+        return output
+
+    def is_empty(self):
+        return self._len == 0
+
+    def is_full(self):
+        return (self._len == self._max_length)
+    
+    def get_distances(self):
+        output = list()
+        cursor = self._head
+        while cursor != None:
+            output.append(cursor._distance)
+            cursor = cursor._next
+        return output
+
+    def get_results(self):
+        output = list()
+        cursor = self._head
+        while cursor != None:
+            output.append(cursor._value)
+            cursor = cursor._next
+        return output
+
+    def get_max(self):
+        return self._head._distance
+    
+    # insert a node in the queue if it is smaller than one element
+    # then delete the highest element
+    def insert(self, distance, point, value):     
+        new_node = self._NODE_QUEUE(distance, point, value)
+
+        if self.is_empty():
+            self._head = new_node
+            self._len = 1
+            return 1
+
+        cursor = self._head
+        while cursor._next != None:
+            if((cursor._point == point).all()):
+                return 1
+            cursor = cursor._next
+        if((cursor._point == point).all()):
+                return 1
+
+        cursor = self._head
+
+        if self._len < self._max_length:
+            self._len += 1
+            if cursor._distance < distance:
+                self._head, new_node._next = new_node, cursor
+                return 1
+
+            while cursor._next != None and cursor._next._distance > distance:
+                cursor = cursor._next
+            new_node._next, cursor._next = cursor._next, new_node
+            return 1
+
+        elif self._len == self._max_length:
+            if cursor._distance < distance:
+                return 0
+
+            while cursor._next != None and cursor._next._distance > distance:
+                cursor = cursor._next
+            new_node._next, cursor._next = cursor._next, new_node
+
+            self._head = self._head._next
+            return 1
+
