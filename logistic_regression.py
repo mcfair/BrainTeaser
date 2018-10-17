@@ -29,8 +29,8 @@ class LogisticRegression(object):
     def fit(self, X, y):
         if self.fit_intercept:
             X = self.__add_intercept(X)
-        
-        # weights initialization
+            
+        # weight/theta initialization
         self.theta = np.zeros(X.shape[1])
         
         for i in range(self.num_iter):
@@ -47,7 +47,6 @@ class LogisticRegression(object):
     def predict_prob(self, X):
         if self.fit_intercept:
             X = self.__add_intercept(X)
-    
         return self.__sigmoid(np.dot(X, self.theta))
     
     def predict(self, X, threshold=0.5):
