@@ -1,5 +1,6 @@
 """
 https://medium.com/@martinpella/logistic-regression-from-scratch-in-python-124c5636b8ac
+https://ml-cheatsheet.readthedocs.io/en/latest/logistic_regression.html
 """
 
 import numpy as np
