@@ -2,7 +2,7 @@
 https://medium.com/@martinpella/logistic-regression-from-scratch-in-python-124c5636b8ac
 https://ml-cheatsheet.readthedocs.io/en/latest/logistic_regression.html
 """
-
+from __future__ import print_function
 import numpy as np
 
 class LogisticRegression(object):
@@ -19,6 +19,11 @@ class LogisticRegression(object):
         return 1 / (1 + np.exp(-z))
     
     def __loss(self, h, y):
+        """
+        cross-entropy loss
+        when y==1, loss= -y * np.log(h), where h is the predicted logit = [0, 1]
+        when y==0, loss= - (1 - y) * np.log(1 - h)  
+        """
         return np.mean(-y * np.log(h) - (1 - y) * np.log(1 - h))
     
     def fit(self, X, y):
@@ -45,12 +50,12 @@ class LogisticRegression(object):
     
         return self.__sigmoid(np.dot(X, self.theta))
     
-    def predict(self, X, threshold):
+    def predict(self, X, threshold=0.5):
         return self.predict_prob(X) >= threshold
 
  if __name__ == '__main__':
     model = LogisticRegression(lr=0.1, num_iter=300000)
     pred_y = model.predict(X)
     # accuracy
-    print np.mean(pred_y == y)
+    print (np.mean(pred_y == y))
         
