@@ -60,3 +60,60 @@ class KDTree(object):
             if median_index < m - 1:
                 queueObj = QueueObj(vectors[median_index + 1:], depth + 1, node, 0, 1)
                 queue.append(queueObj)
+    def search(self, vector):
+        node = self.root
+        depth = 0
+        while node is not None:
+            if np.array_equal(node.vector, vector):
+                return True
+            axis = depth % self.vector_dim
+            if vector[axis] <= node.split_value:
+                node = node.left
+            else:
+                node = node.right
+            depth += 1
+        return False
+    
+    def insert_distance_into_heap(self, distances, node, node_distance, k):
+        if len(distances) == k and -distances[0][0] > node_distance:
+            heapq.heappop(distances)
+        if len(distances) < k:
+            heapq.heappush(distances, (-node_distance, node.split_row_index))
+            
+    def nearest_neighbor(self, vector, k):
+        search_stack = [(self.root, 0)]
+        distances, visited = [], set()
+        while len(search_stack) > 0:
+            node, depth = search_stack[-1]
+            axis = depth % self.vector_dim
+            child_node = None
+            if vector[axis] <= node.split_value:
+                if node.left is None or node.left.split_row_index in visited:
+                    node_distance = math.sqrt(np.sum((node.vector - vector) ** 2))
+                    if node.right is None or node.right.split_row_index in visited:
+                        self.insert_distance_into_heap(distances, node, node_distance, k)
+                    else:
+                        w = node_distance if len(distances) == 0 else - distances[0][0]
+                        if node.split_value - vector[axis] <= w:
+                            child_node = node.right
+                else:
+                    child_node = node.left
+            else:
+                if node.right is None or node.right.split_row_index in visited:
+                    node_distance = math.sqrt(np.sum((node.vector - vector) ** 2))
+                    if node.left is None or node.left.split_row_index in visited:
+                        self.insert_distance_into_heap(distances, node, node_distance, k)
+                    else:
+                        w = node_distance if len(distances) == 0 else - distances[0][0]
+                        if vector[axis] - node.split_value <= w:
+                            child_node = node.left
+                else:
+                    child_node = node.right
+            if child_node is None or child_node.split_row_index in visited:
+                visited.add(node.split_row_index)
+                search_stack.pop()
+            else:
+                search_stack.append((child_node, depth + 1))
+        distances = [(-x, y) for x, y in distances]
+        distances = sorted(distances, key=lambda k: k[0])
+        return distances    
